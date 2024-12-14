@@ -35,12 +35,17 @@ pub mod snn {
       }
     }
   }
+
+  use Option::None;
+  use Option::Some;
+  use Result::Okay;
+  use Result::Error;
 }
 
 #[inline(never)]
 fn get(cond: bool) -> snn::Result<i32, i32> {
   if cond {
-    snn::Result::Okay(4321)
+    snn::Okay(4321)
   } else {
     snn::Result::Error(1234)
   }
@@ -50,7 +55,7 @@ fn custom(cond: bool) -> snn::Result<(), ()> {
   if cond {
     snn::Result::Okay(())
   } else {
-    snn::Result::Error(())
+    snn::Error(())
   }
 }
 
