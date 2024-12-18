@@ -23,7 +23,7 @@ impl Shape {
     match self {
       Self::Rectangle {
         width: w,
-        height: h,
+        height: h
       } => w * h,
       Self::Circle(radius) => std::f32::consts::PI.sqr() * radius,
       Self::Triangle(a, b, c) => {
@@ -58,16 +58,18 @@ impl FromStr for Shape {
   }
 }
 
-macro_rules! shape_into_impl {
+use std::io::{BufRead, Write};
+use std::str::FromStr;
+use Shape::{Circle, Rectangle, Triangle};
+macro_rules! impl_shape_from {
   ($($type:ty),*) => {
   $(
-      impl Into<Shape> for $type {
-        fn into(self) -> Shape {
-          Shape::from_str(&self).expect(
+      impl From<$type> for Shape {
+        fn from(string: $type) -> Shape {
+          Shape::from_str(&string).expect(
             &format!(
               "Decode error, {} {:?} does not encode a Shape",
-              stringify!($type),
-              self
+              stringify!($type), string
             )
           )
         }
@@ -76,40 +78,30 @@ macro_rules! shape_into_impl {
   }
 }
 
-shape_into_impl!(String, &str);
-
-use std::io::{BufRead, Write};
-use std::str::FromStr;
-use Shape::{Circle, Rectangle, Triangle};
+impl_shape_from!(String, &str);
 
 fn main() {
-  let age = Option::<i32>::None;
-  match age {
-    Some(v) => println!("Your age is {v}"),
-    None => println!("You don't exist"),
-  }
-  let mut val = Box::new(5052u32);
-  println!("val = {val}");
-  *val = 90;
-  println!("val = {val}");
-  let shapes = vec![
+  let shapes = [
+    "23".into(),
+    "12x34".into(),
+    "12x23x34".into(),
+    Shape::from("90"),
+    Shape::from("78x90"),
+    Shape::from("78x89x90"),
     Rectangle {
       width: 12.0,
       height: 34.0,
     },
     Circle(34.0),
-    "34x78".into(),
-    "5x6x7".into(),
     Triangle(12.0, 34.0, 23.0),
-    "14".into(),
   ];
-
   for shape in shapes {
-    println!("{:?}.area() = {}", shape, shape.area());
+    println!("{shape:?}.area() = {}", shape.area());
   }
 
   println!(
-    "Circle(F) Rectangle(FxF) Triangle(FxFxF) {{break|quit|q|exit}}=exit F=f32"
+    "\nCircle(F) Rectangle(FxF) Triangle\
+     (FxFxF) {{quit|q|exit}}=exit F=f32"
   );
   loop {
     let mut buffer = String::new();
@@ -118,7 +110,8 @@ fn main() {
     match std::io::stdin().lock().read_line(&mut buffer) {
       Ok(0) => break,
       Ok(_) => match buffer.trim() {
-        "break" | "quit" | "q" => break,
+        "exit" | "quit" | "q" => break,
+        "" => continue,
         pat => {
           let shape: Shape = pat.into();
           println!("{:?}.area() = {}", shape, shape.area());
