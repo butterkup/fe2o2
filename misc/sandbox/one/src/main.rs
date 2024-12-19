@@ -5,6 +5,7 @@ fn main() {
   one::inner::one();
   three::inner::three();
   three::pack::inner::three();
+  three::packf::inner::three();
 
   let mut rng = three::packf::inner::Range::to(10);
   for i in rng.iter() {

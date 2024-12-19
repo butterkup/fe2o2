@@ -1,6 +1,7 @@
 pub mod inner {
   pub fn three() {
     println!("Hello from three::packf::inner::three()");
+    crate::lib();
     super::super::lib();
   }
 
