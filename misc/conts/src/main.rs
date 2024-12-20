@@ -1,3 +1,4 @@
+#![feature(random)]
 #![allow(unused)]
 
 macro_rules! mvec {
@@ -195,7 +196,38 @@ impl Obj {
   }
 }
 
+trait IMyError {
+  fn why(&self) -> &'static str { "An Error Occured" }
+}
+
+struct MyError {
+  reason: &'static str,
+}
+
+impl MyError {
+  fn new(reason: &'static str) -> MyError { MyError { reason } }
+}
+
+impl IMyError for MyError {
+  fn why(&self) -> &'static str { self.reason }
+}
+
+fn try_get_value() -> Result<i32, impl IMyError> {
+  if std::random::random::<bool>() {
+    Ok(5052)
+  } else {
+    Err(MyError::new("We got a random false"))
+  }
+}
+
 fn main() {
+  match try_get_value() {
+    Ok(value) => println!("I got the number {value}"),
+    Err(error) => println!("ERROR: {}", error.why()),
+  }
+}
+
+fn main1() {
   let _b = mvec!(i32);
   let _vec = mvec![1, 2, 3, 4];
   let s1: String = "Simon".into();
