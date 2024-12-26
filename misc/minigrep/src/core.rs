@@ -1,4 +1,7 @@
-pub fn show_found(config: &crate::Config, text: &str) {
+pub fn show_found<'a>(
+  config: &crate::Config,
+  text: impl Iterator<Item = &'a str>,
+) {
   if config.case_insentitive {
     for (line, lineno) in search_icase_iter(&config.query, text) {
       println!("{}:{lineno}: {line}", &config.file_path);
@@ -12,11 +15,10 @@ pub fn show_found(config: &crate::Config, text: &str) {
 
 fn search_icase_iter<'a>(
   query: &str,
-  contents: &'a str,
+  contents: impl Iterator<Item = &'a str>,
 ) -> impl std::iter::Iterator<Item = (&'a str, usize)> {
   let query = query.to_lowercase();
   contents
-    .lines()
     .map(|line| (line, line.to_lowercase()))
     .zip(1usize..)
     .filter(move |((_, line), _)| line.contains(&query))
@@ -25,10 +27,9 @@ fn search_icase_iter<'a>(
 
 fn search_iter<'a>(
   query: &str,
-  contents: &'a str,
+  contents: impl Iterator<Item = &'a str>,
 ) -> impl std::iter::Iterator<Item = (&'a str, usize)> {
   contents
-    .lines()
     .zip(1usize..)
     .filter(move |(line, _)| line.contains(query))
 }
@@ -51,7 +52,8 @@ in a production
 environment
 near a Ductile
 indistry.";
-        let found: Vec<(&str, usize)> = search_iter(query, contents).collect();
+        let found: Vec<(&str, usize)> =
+          search_iter(query, contents.lines()).collect();
         assert_eq!(
           vec![("very productive", 2), ("in a production", 4),],
           found
@@ -70,7 +72,7 @@ Five
 six
 seven
 ";
-        let found: Vec<_> = search_iter(query, contents).collect();
+        let found: Vec<_> = search_iter(query, contents.lines()).collect();
         assert_eq!(Vec::<(&str, usize)>::new(), found);
       }
     }
@@ -93,7 +95,8 @@ programmers cannot imagine
 a world without rust.
 Get Rusty people.
 Choose your poison.";
-        let found: Vec<_> = search_icase_iter(query, contents).collect();
+        let found: Vec<_> =
+          search_icase_iter(query, contents.lines()).collect();
         assert_eq!(
           vec![
             ("Rust is a systems", 1),
@@ -115,7 +118,8 @@ python
 Rust
 C++
 c";
-        let found: Vec<_> = search_icase_iter(query, contents).collect();
+        let found: Vec<_> =
+          search_icase_iter(query, contents.lines()).collect();
         assert_eq!(Vec::<(&str, usize)>::new(), found);
       }
     }
