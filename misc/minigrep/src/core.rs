@@ -1,3 +1,9 @@
+/// This is the actual application, rather disapointing
+/// isn't it, but again, this is a grep utility; find a
+/// string inside a bigger string and report location.
+/// However, much is desired, like controling if line
+/// number is to be reported or file name too, later
+/// versions will take this into consideration.
 pub fn show_found<'a>(
   config: &crate::Config,
   text: impl Iterator<Item = &'a str>,

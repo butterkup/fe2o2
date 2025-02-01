@@ -1,6 +1,15 @@
 [package]
-name = "minigrep"
+name = "butterkups-minigrep"
 version = "0.1.0"
 edition = "2024"
+description = "Mini grep utility; very weak application, use grep instead."
+license = "MIT"
+authors = ["Simon Nganga <sn.butterkup@gmail.com>"]
+keywords = ["minigrep", "grep"]
+homepage = "https://github.com/butterkup/fe2o2/tree/master/misc/butterkups-minigrep"
+categories = ["searching", "string", "matching"]
+
+[lib]
+name = "minigrep"
 
 [dependencies]
